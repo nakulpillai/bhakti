@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Hanuman Chalisa</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a0a2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Georgia', serif;
+    background: #1a0a2e;
+    color: #f5e6d3;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .card {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 2rem;
+    will-change: transform;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-inner {
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    padding: 2.5rem 2rem;
+    background: linear-gradient(135deg, rgba(255,150,50,0.12), rgba(255,100,50,0.06));
+    border: 1px solid rgba(255,150,50,0.2);
+    border-radius: 1.25rem;
+    backdrop-filter: blur(10px);
+  }
+
+  .card-text {
+    font-size: 1.35rem;
+    line-height: 2;
+    letter-spacing: 0.02em;
+    white-space: pre-line;
+  }
+
+  .card.title .card-text {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #ff9933;
+  }
+
+  .dots {
+    position: fixed;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 10;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,150,50,0.3);
+    transition: background 0.3s, transform 0.3s;
+  }
+
+  .dot.active {
+    background: #ff9933;
+    transform: scale(1.4);
+  }
+</style>
+</head>
+<body>
+
+<div class="container" id="container"></div>
+<div class="dots" id="dots"></div>
+
+<script>
+const cards = [
+  { text: "Hanuman Chalisa", isTitle: true },
+  { text: "Shri Guru Charan Sarooja-raj\nNija manu Mukura Sudhaari\nBaranau Rahubhara Bimala\nYasha Jo Dayaka Phala Chari" },
+  { text: "Budhee-Heen Thanu Jannikay\nSumirow Pavana Kumara\nBala-Budhee Vidya Dehoo Mohee\nHarahu Kalesha Vikaara" },
+  { text: "Jai Hanuman gyan gun sagar\nJai Kapis tihun lok ujagar\n\nRam doot atulit bal dhama\nAnjaani-putra Pavan sut nama" }
+];
+
+const container = document.getElementById('container');
+const dotsEl = document.getElementById('dots');
+let current = 0;
+let startY = 0;
+let isDragging = false;
+let dragOffset = 0;
+
+// Build cards
+cards.forEach((c, i) => {
+  const el = document.createElement('div');
+  el.className = 'card' + (c.isTitle ? ' title' : '');
+  el.innerHTML = `<div class="card-inner"><div class="card-text">${c.text}</div></div>`;
+  el.style.transform = `translateY(${i * 100}%)`;
+  container.appendChild(el);
+
+  const dot = document.createElement('div');
+  dot.className = 'dot' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goTo(i));
+  dotsEl.appendChild(dot);
+});
+
+const cardEls = container.querySelectorAll('.card');
+const dotEls = dotsEl.querySelectorAll('.dot');
+
+function goTo(index) {
+  current = Math.max(0, Math.min(cards.length - 1, index));
+  cardEls.forEach((el, i) => {
+    el.style.transition = 'transform 0.35s cubic-bezier(0.4, 0, 0.2, 1)';
+    el.style.transform = `translateY(${(i - current) * 100}%)`;
+  });
+  dotEls.forEach((d, i) => d.classList.toggle('active', i === current));
+}
+
+// Touch
+container.addEventListener('touchstart', e => {
+  startY = e.touches[0].clientY;
+  isDragging = true;
+  cardEls.forEach(el => el.style.transition = 'none');
+}, { passive: true });
+
+container.addEventListener('touchmove', e => {
+  if (!isDragging) return;
+  dragOffset = e.touches[0].clientY - startY;
+  cardEls.forEach((el, i) => {
+    el.style.transform = `translateY(calc(${(i - current) * 100}% + ${dragOffset}px))`;
+  });
+}, { passive: true });
+
+container.addEventListener('touchend', () => {
+  isDragging = false;
+  const threshold = window.innerHeight * 0.15;
+  if (dragOffset < -threshold) goTo(current + 1);
+  else if (dragOffset > threshold) goTo(current - 1);
+  else goTo(current);
+  dragOffset = 0;
+});
+
+// Mouse wheel
+let wheelTimeout;
+container.addEventListener('wheel', e => {
+  e.preventDefault();
+  clearTimeout(wheelTimeout);
+  wheelTimeout = setTimeout(() => {
+    if (e.deltaY > 20) goTo(current + 1);
+    else if (e.deltaY < -20) goTo(current - 1);
+  }, 50);
+}, { passive: false });
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+  if (e.key === 'ArrowUp') { e.preventDefault(); goTo(current - 1); }
+});
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js');
+}
+</script>
+</body>
+</html>
