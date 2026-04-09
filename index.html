@@ -5,22 +5,62 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Hanuman Chalisa</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1a0a2e">
+<meta name="theme-color" content="#efc59d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rowdies:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   html, body {
     height: 100%;
     overflow: hidden;
-    font-family: 'Georgia', serif;
-    background: #1a0a2e;
-    color: #f5e6d3;
+    font-family: 'Rowdies', cursive;
+    background: #efc59d;
+    color: #5a2d0c;
     touch-action: none;
     -webkit-user-select: none;
     user-select: none;
+  }
+
+  /* Loading screen */
+  .loader {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: #efc59d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1.5rem;
+    transition: opacity 0.5s ease;
+  }
+
+  .loader.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .loader img {
+    width: 180px;
+    height: auto;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  .loader-text {
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: #8b4513;
+    letter-spacing: 0.1em;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
   }
 
   .container {
@@ -48,23 +88,24 @@
     width: 100%;
     text-align: center;
     padding: 2.5rem 2rem;
-    background: linear-gradient(135deg, rgba(255,150,50,0.12), rgba(255,100,50,0.06));
-    border: 1px solid rgba(255,150,50,0.2);
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(139, 69, 19, 0.15);
     border-radius: 1.25rem;
-    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 24px rgba(90, 45, 12, 0.1);
   }
 
   .card-text {
-    font-size: 1.35rem;
-    line-height: 2;
+    font-size: 1.2rem;
+    font-weight: 300;
+    line-height: 2.1;
     letter-spacing: 0.02em;
     white-space: pre-line;
   }
 
   .card.title .card-text {
     font-size: 2rem;
-    font-weight: bold;
-    color: #ff9933;
+    font-weight: 700;
+    color: #8b4513;
   }
 
   .dots {
@@ -82,17 +123,22 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: rgba(255,150,50,0.3);
+    background: rgba(139, 69, 19, 0.2);
     transition: background 0.3s, transform 0.3s;
   }
 
   .dot.active {
-    background: #ff9933;
+    background: #8b4513;
     transform: scale(1.5);
   }
 </style>
 </head>
 <body>
+
+<div class="loader" id="loader">
+  <img src="hanuman.png" alt="Hanuman">
+  <div class="loader-text">Jai Shri Ram</div>
+</div>
 
 <div class="container" id="container"></div>
 <div class="dots" id="dots"></div>
@@ -197,6 +243,13 @@ container.addEventListener('wheel', e => {
 document.addEventListener('keydown', e => {
   if (e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
   if (e.key === 'ArrowUp') { e.preventDefault(); goTo(current - 1); }
+});
+
+// Loading screen
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hidden');
+  }, 1500);
 });
 
 // Register service worker
