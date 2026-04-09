@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "name": "Hanuman Chalisa",
+  "description": "Swipeable prayer cards with the complete Hanuman Chalisa",
+  "icon": "hanuman.png",
+  "updated": "2026-04-09",
+  "changelog": [
+    { "version": "1.0.0", "date": "2026-04-09", "notes": "Initial release with all 22 verses, swipe navigation, and offline support" }
+  ]
+}

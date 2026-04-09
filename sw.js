@@ -1,5 +1,5 @@
-const CACHE = 'chalisa-v3';
-const ASSETS = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png', './hanuman.png'];
+const CACHE = 'chalisa-v4';
+const ASSETS = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png', './hanuman.png', './version.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
