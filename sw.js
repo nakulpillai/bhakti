@@ -1,4 +1,4 @@
-const CACHE = 'chalisa-v4';
+const CACHE = 'chalisa-v5';
 const ASSETS = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png', './hanuman.png', './version.json'];
 
 self.addEventListener('install', e => {
